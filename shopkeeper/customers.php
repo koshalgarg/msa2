@@ -3,7 +3,7 @@
 require('../connect.php');
 session_start();
 if(!isset($_SESSION['email'])){
-header('Location:/msa/index.php');
+header('Location:../index.php');
 
 }
 
@@ -68,7 +68,7 @@ $email=$_SESSION["email"];
         <p>Are you surely want to logout?.</p>
       </div>
       <div class="modal-footer">
-       <a href="/msa/logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
+       <a href="../logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>
@@ -97,7 +97,8 @@ $email=$_SESSION["email"];
     <tbody id="tbody">
 <?php
 
-$qry="SELECT u.name,p.patient_id,u.contact_no,u.address ,( SUM(p.total)-SUM(p.paid) )as credit from patient p , users u where p.shop_id= '$email' and u.user_id=p.patient_id group by p.patient_id";
+$qry="SELECT u.name,b.patient_id,u.contact_no,u.address ,( SUM(b.total)-SUM(b.paid) )as credit from bill b  , users u where b.shop_id= '$email' and u.user_id=b.patient_id and b.processed='1' group by b.patient_id";
+
 
 
 $r=mysqli_query($conn,$qry);

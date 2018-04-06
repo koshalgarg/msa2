@@ -11,7 +11,7 @@ $qry="update stock s ,bill_medicine bm set s.quantity=s.quantity-bm.qty WHERE s.
 
 $r = mysqli_query($conn, $qry);
 
-$qry = "update  bill set total='$total', paid='$paid', processeed='1'  where bill_id='$bill_id'";
+$qry = "update  bill set total='$total', paid='$paid', processed='1'  where bill_id='$bill_id'";
 
 $r = mysqli_query($conn, $qry);
 

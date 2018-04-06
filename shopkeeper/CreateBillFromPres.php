@@ -26,36 +26,16 @@ header('Location:../index.php');
 }
 
 $email=$_SESSION['email'];
-if(!isset($_SESSION['bill_id'])){
+$pres_id=$_GET['pres_id']; 
 
-  $qry="INSERT INTO `bill` (`bill_id`, `shop_id`, `patient_id`, `date`, `total`, `paid`, `processed`) VALUES (NULL, '".$email."', '', '".date("Y-m-d")."', '', '', '0');";
+  $qry="Select * from users u,prescriptions p where p.pres_id='$pres_id' AND u.user_id=p.patient_id"; 
+  $t=mysqli_query($conn,$qry);
+  $row=mysqli_fetch_assoc($t);
 
-  if (mysqli_query($conn, $qry)) {
-    $bill_id = mysqli_insert_id($conn);
-    $_SESSION['bill_id']=$bill_id;
-  } 
-}
-else{
-  $bill_id=$_SESSION['bill_id'];
-}
+$qr2="SELECT * FROM pres_meds p,medicine m WHERE p.pres_id='$pres_id' and p.product_id=m.product_id"; 
+  $t=mysqli_query($conn,$qr2);
 
- $user_info['name']="";
- $user_info['user_id']="";
- $user_info['address']="";  
- $user_info['date']="";  
  
-
-$qry="select u.user_id,u.name,u.contact_no,b.date as date,u.address  from bill b,users u where b.bill_id='$bill_id' and u.user_id=b.patient_id";
-$r=mysqli_query($conn, $qry);
-if(mysqli_num_rows($r))
-  $user_info=mysqli_fetch_assoc($r);
-
-$qry="select date from bill p where p.bill_id='$bill_id' " ;
-$r=mysqli_query($conn, $qry);
-if(mysqli_num_rows($r)){
-$user_info['date']=mysqli_fetch_assoc($r)['date']; 
-
-}
 ?>
 
 
@@ -74,7 +54,9 @@ $user_info['date']=mysqli_fetch_assoc($r)['date'];
                 <li  class="nav-item active"><a class="nav-link"  href="#">Home</a></li>
                 <li  class="nav-item"><a class="nav-link"  href="stock.php">Stock</a></li>
                 <li class="nav-item"><a class="nav-link"  href="customers.php">Customer</a></li>
-                <li class="nav-item"><a class="nav-link" href="Prescriptions.php">Prescriptions</a></li>
+               
+                <li class="nav-item"><a class="nav-link" href="Prescriptions.php">Prescriptions<span id="notif" class="badge"></span></a></li>
+
             <li class=" nav-item "><a class="nav-link"  href="order.php">Order</a></li>
             </ul>
 
@@ -85,6 +67,54 @@ $user_info['date']=mysqli_fetch_assoc($r)['date'];
           </div>
   </nav>
 	
+
+
+ <div class="container-fluid">
+    
+    <h5>Name       :<?php echo $row['name']; ?></h5> 
+    <h5>Email      :<?php echo $row['user_id']; ?></h5> 
+    <h5>Address    :<?php echo $row['address']; ?></h5> 
+    <h5>Contact No :<?php echo $row['contact_no']; ?></h5> 
+    <h5>Date       :<?php echo $row['date']; ?></h5>
+    
+
+  </div>
+  <table class="table" id="myTable">
+        <thead>
+            <tr>
+              <th>Sl.No</th>
+              <th>Name</th>
+              <th>Quantity</th>
+              
+            </tr>
+        </thead>
+        <tbody id="tbody">
+  <?php 
+  $var=1;
+if(mysqli_num_rows($t) > 0)
+{
+ while($row = mysqli_fetch_assoc($t))
+ {
+    ?>
+        <tr>
+        <td><?php echo $var;?></td> 
+        <td><?php echo $row['name'] ?></td>    
+        <td><?php echo $row['quantity'] ?></td>
+
+
+      </tr>
+   <?php
+    $var=$var+1;
+ }
+
+}
+?>
+
+
+      </tbody>
+        </table>
+
+
 <div id="myModal" class="modal fade" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
 
@@ -131,46 +161,6 @@ $user_info['date']=mysqli_fetch_assoc($r)['date'];
   </div>
 </div>  
 
-
-
-<div class="col-md-12 form-inline" style="padding: 5px">
-  
-  <input  type="text" style="margin: 10px" class="form-control input-sm " id="name" tabindex="1" class=" form-control input-sm" placeholder="Patient Name" autocomplete="off" value="<?php echo $user_info['name']; ?>">
-
-
-  <input type="text" style="margin: 10px"
-   class="col-md-3 form-control input-sm"  id="email" tabindex="1"  placeholder="Email" autocomplete="off" value="<?php echo $user_info['user_id']; ?>">
-
-
-  <input type="text" style="margin: 10px"
-   class="col-md-3 form-control input-sm"  id="address" tabindex="1"  placeholder="Address" autocomplete="off" value="<?php echo $user_info['address']; ?>">
-
-
-  <input type="date" style="margin: 10px" class="col-md-3 form-control input-sm" id="date" tabindex="1" placeholder="Date" autocomplete="off" value="<?php echo $user_info['date']; ?>">
-
-</div>
-
-  
-
-
-
-
-
-
-
-
-
-<form class="form-inline" style="padding: 5px" onsubmit=" return addMeds()" id="new_med">
-
-  <input type="text" style="margin: 10px"   id="meds_name" tabindex="1" class=" form-control input-sm" placeholder="Enter medicine name" autocomplete="off">
-
-
-  <input type="number"  min="0" style="margin: 10px"  name="qty" id="qty" tabindex="1" class="form-control input-sm" placeholder="Quantity" autocomplete="off">
-  
-
-  <button  class="btn btn-primary" id="add">Add</button>
-
-</form>
 <div id="table_div">
  
  <?php
@@ -302,10 +292,10 @@ var stock=current['quantity'];
 if(qty=="0" || qty==""){
   return false;
 }
-if(qty>stock){
+/*if(qty>stock){
   alert("aa");
   return false;
-}
+}*/
     var id=current['product_id'];
     var batch_no=current['batch_no'];
 
@@ -330,12 +320,37 @@ function billPay(){
 
 
 total=$("#total").html();
-paid=$("#paid").val();
+paid=document.getElementById("paid").value;
 
 
 window.location = "ajaxphp/update_total_in_bill.php?total="+total+"&paid="+paid;
 
 }
+
+setInterval(function() {
+ 
+
+  $.ajax({
+    url:"ajaxphp/prescription_notification.php",
+     method:"POST",
+    data: {'product_id':"1"},
+   
+    success:function(data)
+    {
+      /*if(data.localeCompare("0")){
+      document.getElementById("notif").innerHTML='';
+        }
+        else{*/
+      document.getElementById("notif").innerHTML=data;
+          
+        //}
+    }
+    });
+
+
+
+
+}, 3000);
 
 
 </script>

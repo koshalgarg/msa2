@@ -2,7 +2,7 @@
 require('../connect.php');
 session_start();
 if(!isset($_SESSION['email'])){
-header('Location:/msa/index.php');
+header('Location:../index.php');
 
 }
 $email=$_SESSION["email"];
@@ -67,7 +67,7 @@ $email=$_SESSION["email"];
 
       </div>
       <div class="modal-footer">
-       <a href="/msa/logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
+       <a href="../logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>
@@ -117,7 +117,7 @@ $email=$_SESSION["email"];
         <th>Product Id</th>
         <th>Product Name</th>
         <th>Batch No.</th>
-        <th>Quanity<input type="number" min="0" style="margin: 3"  width="48" id="quantity_filter" onchange="filterTableQuantity()"> </th>
+        <th>Quanity<input type="number" min="0" style="margin: 3"  width="48" id="quantity_filter" onkeyup ="filterTableQuantity()"> </th>
         <th>Order</th>
 		<th>Order Amount</th>
 	
@@ -240,6 +240,7 @@ $(document).ready(function(){
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
     });
   });
+
  
  $('#sups').typeahead({
   
@@ -295,18 +296,39 @@ function filterTableQuantity() {
   // Declare variables 
   var input, filter, table, tr, td, i;
   input = document.getElementById("quantity_filter");
-  qty=input.value;
+  qty=input.value; 
+
   table = document.getElementById("myTable");
   tr = table.getElementsByTagName("tr");
 
-
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[3];
-    if (td) {
-      if (td.innerHTML <= qty) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
+  if(qty)
+  {
+    console.log('hi');
+    for (i = 0; i < tr.length; i++) 
+    {
+      td = tr[i].getElementsByTagName("td")[3];
+      if (td) 
+      {
+        if (parseInt(td.innerHTML) <= parseInt(qty))
+        {
+          //console.log(td.innerHTML);
+          tr[i].style.display = "";
+        } 
+        else if(parseInt(qty)>0) 
+        {
+          tr[i].style.display = "none";
+        }
+      } 
+    }
+  }
+  else
+  {
+     for (i = 0; i < tr.length; i++) 
+    {
+      td = tr[i].getElementsByTagName("td")[3];
+      if (td) 
+      {
+          tr[i].style.display = "";
       }
     } 
   }

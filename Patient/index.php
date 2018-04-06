@@ -31,26 +31,24 @@ $email=$_SESSION["email"];
 </head>
 
 <body>
-  
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  		 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-       <!--  <div class="navbar-header">
-            <a class="navbar-brand" href="shopowner.php">Shop Name</a>
-          </div> -->
-            <ul class="navbar-nav mr-auto">
-                <li  class="nav-item active"><a class="nav-link"  href="#">Home</a></li>
-                <li  class="nav-item"><a class="nav-link"  href="doctors.php">Doctors</a></li>
-                <li class="nav-item"><a class="nav-link"  href="credits.php">Credits</a></li>
-            </ul>
+    				<ul class="navbar-nav mr-auto">
+      					<li class=" nav-item active" ><a class="nav-link" href="#">Purchases</a></li>
+      					<li class="nav-item"><a class="nav-link" href="doctors.php">Doctors</a></li>
+      					<li class="nav-item"><a class="nav-link" href="credits.php">Credits</a></li>
+      		
+    				</ul>
 
-            <button  type="button" class="btn btn-danger navbar-btn pull-right" data-toggle="modal" data-target="#myModal">Logout</button> 
-          </div>
-  </nav>
-  
-  
+             <button  type="button" class="btn btn-danger navbar-btn pull-right" data-toggle="modal" data-target="#myModal">Logout</button> 
+    			</div>
+	</nav>
+	
+	
 <div id="myModal" class="modal fade" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
 
@@ -73,8 +71,7 @@ $email=$_SESSION["email"];
     </div>
 
   </div>
-</div>
-
+</div> 
 <input class="form-control" id="myInput" type="text" placeholder="Search..">
   <br>
   <script>
@@ -93,8 +90,12 @@ $(document).ready(function(){
     <thead>
       <tr>
 
+        <th>Name</th>
+        <th>Contact No</th>
+        <th>Address</th>
         <th>Date</th>
-        <th>ShopKeeper</th>
+		<th>Total</th>
+		<th>Paid</th>
         <th></th>
         
         
@@ -103,7 +104,7 @@ $(document).ready(function(){
     <tbody>
 <?php
 
-$qry="SELECT * from bill b,users u where b.patient_id= '$email' and u.user_id=b.shop_id";
+$qry="SELECT b.bill_id,u.name,u.contact_no,u.address ,b.date,b.total,b.paid from bill b , users u where b.patient_id= '$email' and u.user_id=b.shop_id";
 
 
 $r=mysqli_query($conn,$qry);
@@ -117,10 +118,15 @@ while($p = mysqli_fetch_assoc($r)) {
     
     ?>
           <tr class="active">
-        <td><?php echo $p['date'] ?></td>    
+        <td><?php echo $p['name'] ?></td>    
       
-        <td><?php echo $p['shop_id'] ?></td>
-        <td><a href="viewBill.php?bill_id=<?php echo $p['bill_id']; ?> "><button type="button" id="b_<?php echo $p['bill_id']; ?>" class="btn btn-default btn-sm" ><span class="glyphicon glyphicon-remove"></span> view</button></td>
+        <td><?php echo $p['contact_no'] ?></td>
+        <td><?php echo $p['address'] ?></td>
+          <td><?php echo $p['date'] ?></td>
+		    <td><?php echo $p['total'] ?></td>
+			  <td><?php echo $p['paid'] ?></td>
+          <td><button type="button" id="<?php echo $p['bill_id']; ?>" class="btn btn-primary pull-right" value="View"onclick="showBillModal(this)">View</button>
+          </td>
       
 
       </tr>
@@ -142,5 +148,36 @@ while($p = mysqli_fetch_assoc($r)) {
     </tbody>
   </table>
 
+  <div id="bill_contain"></div>
+
 
 </body>
+
+<script type="text/javascript">
+  
+
+function showBillModal(obj) {
+
+          var id=obj.id;
+        
+            jQuery.ajax({
+                type: 'POST',
+                url: "ajaxphp/patientBillDetailsModal.php",
+                data: {'bill_id':id},
+               
+                success: function(response)
+                {
+                 //alert(response);
+                 document.getElementById("bill_contain").innerHTML=response;
+                 //jQuery('#bill_contain').html(response);
+                 
+                 jQuery('#bill_contain > #ab').modal();
+                     
+                }
+            });
+
+          }
+
+
+
+</script>

@@ -2,7 +2,7 @@
 require('../connect.php');
 session_start();
 if(!isset($_SESSION['email'])){
-header('Location:/msa/index.php');
+header('Location:../index.php');
 
 }
 $email=$_SESSION["email"];
@@ -68,13 +68,41 @@ $email=$_SESSION["email"];
         <p>Are you surely want to logout?.</p>
       </div>
       <div class="modal-footer">
-       <a href="/msa/logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
+       <a href="../logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>
 
   </div>
 </div>	
+<div id="orderModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+        <h4 class="modal-title">Order Confirmation</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <p id="txt">Please Select Some items</p>
+        <input type="text" name="sups" id="sups" tabindex="1" class="form-control input-sm" placeholder="Enter supplier name" autocomplete="off">
+          <br/>
+               <button type="button" class="btn btn-primary" id="f3" onclick="choose_sup()">Choose Supplier</button>
+      
+
+      </div>
+      <div class="modal-footer">
+       <button type="button" id="ok" class="btn btn-success"  data-dismiss="modal" onclick="place_order()">Confirm Order</button></a>
+    <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+</div>  
 
 <!-- Card -->
 <div class="card mx-auto w-50 text-center" >
@@ -88,8 +116,7 @@ $email=$_SESSION["email"];
             <br>
             <input type="text" name="quantity" id="qty" tabindex="1" class="form-control input-sm"  placeholder="Quantity" >
             <br>
-            <input type="text" name="sups" id="sups" tabindex="1" class="form-control input-sm" placeholder="Enter supplier name" autocomplete="off">
-            <br>
+            
             <button type="button" tabindex="1" class=" text-center mt-4 indigo btn btn-primary center-block" id="addrow">Go</button>
           </div>
         </div>
@@ -113,7 +140,7 @@ $email=$_SESSION["email"];
 
 <div class="text-center"> 
 
-<button type="button" tabindex="1" class="btn btn-primary"  id="fetch" onclick="fetchmeds()">Place Order</button>
+<button type="button" tabindex="1" class="btn btn-primary"  id="fetch" onclick="additems()">Place Order</button>
  </div>
 
                       
@@ -186,18 +213,15 @@ $("#olist").on('click','button',function(){
 });
 
 
-function fetchmeds()
+function additems()
 {
+
 	var med_name=$('#meds').val();
-  var sup_name=$('#sups').val()
+  //var sup_name=$('#sups').val()
 	var qt=$('#qty').val();
   jsonarr=[]
   var table = document.getElementById("olist");
-  if(table.rows.length<=1)
-  {
-    alert('Please Add Some Items');
-    return;
-  }
+  
   for (var i = 1, row; row = table.rows[i]; i++) 
   {
       pd=table.rows[i].cells[0].innerHTML;
@@ -209,19 +233,25 @@ function fetchmeds()
   }
    sendobj["meds"]=JSON.stringify(jsonarr);
    sendobj["status"]="1";
-   sendobj["sup"]="for_testing";
-   var sendobj2=JSON.stringify(sendobj);
+   //sendobj["sup"]="for_testing";
+   //var sendobj2=JSON.stringify(sendobj);
     //alert(sendobj2);
-    $.ajax({
-    url:"orderplace.php",
-    method:"POST",
-    data:{query:sendobj2},
-    dataType:"json",
-    success:function(data)
-    {
-      alert('Order Placed Successfully');
+ 
+
+    if (table.rows.length<=1){
+      $('#txt').css('visibility', 'visible');
+      $('#sups').css('visibility', 'hidden');
+      $('#f3').css('visibility', 'hidden');
+      $('#ok').css('visibility', 'hidden');
+      $('#orderModal').modal('show')
+    } 
+    else{
+      $('#txt').css('visibility', 'hidden');
+      $('#sups').css('visibility', 'visible');
+      $('#f3').css('visibility', 'visible');
+      $('#ok').css('visibility', 'visible');
+      $('#orderModal').modal('show')
     }
-   });
 
 	
 }
@@ -243,6 +273,36 @@ function fetchmeds()
    })
   }
  });
+
+
+ function choose_sup()
+{
+  sup_name=$('#sups').val();
+  //console.log(sup_name);
+  sendobj["sup"]=sup_name;
+  
+}
+
+function place_order()
+{
+
+  //console.log(sendobj.meds[0].pid);
+   //console.log(sendobj.meds[0].qty);
+   var sendobj2=JSON.stringify(sendobj);
+    //alert(sendobj2);
+    $.ajax({
+    url:"orderplace.php",
+    method:"POST",
+    data:{query:sendobj2},
+    dataType:"json",
+    success:function(data)
+    {
+    }
+   });
+
+  
+}
+
 </script>
 
 <style>

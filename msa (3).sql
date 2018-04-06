@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 05, 2018 at 08:57 PM
+-- Generation Time: Apr 06, 2018 at 07:22 PM
 -- Server version: 10.1.16-MariaDB
 -- PHP Version: 5.6.24
 
@@ -70,7 +70,8 @@ CREATE TABLE `bill` (
 --
 
 INSERT INTO `bill` (`bill_id`, `shop_id`, `patient_id`, `date`, `total`, `paid`, `processed`) VALUES
-(1, 'dibya_sk@gmail.com', '', '2019-04-05', 0, 0, 0);
+(2, 'koshal_sk@gmail.com', 'patient2@gmail.com', '2018-05-06', 230, 200, 1),
+(3, 'koshal_sk@gmail.com', '', '2018-04-06', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -85,6 +86,14 @@ CREATE TABLE `bill_medicine` (
   `batch_no` int(11) NOT NULL,
   `qty` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `bill_medicine`
+--
+
+INSERT INTO `bill_medicine` (`id`, `bill_id`, `product_id`, `batch_no`, `qty`) VALUES
+(3, 2, 8, 1, 2),
+(4, 2, 4, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -148,11 +157,12 @@ CREATE TABLE `orders` (
 --
 
 CREATE TABLE `prescriptions` (
-  `id` int(11) NOT NULL,
+  `pres_id` int(11) NOT NULL,
   `doctor_id` varchar(20) NOT NULL,
   `patient_id` varchar(20) NOT NULL,
   `shop_id` varchar(50) NOT NULL,
   `seen` int(11) NOT NULL DEFAULT '0',
+  `processed` int(11) NOT NULL DEFAULT '0',
   `bill_id` int(11) NOT NULL,
   `date` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -165,9 +175,9 @@ CREATE TABLE `prescriptions` (
 
 CREATE TABLE `pres_meds` (
   `id` int(11) NOT NULL,
+  `pres_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `purachased` int(11) NOT NULL DEFAULT '1'
+  `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -182,6 +192,20 @@ CREATE TABLE `stock` (
   `batch_no` int(11) NOT NULL,
   `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `stock`
+--
+
+INSERT INTO `stock` (`shop_id`, `product_id`, `batch_no`, `quantity`) VALUES
+('koshal_sk@gmail.com', 1, 1, 99),
+('koshal_sk@gmail.com', 2, 1, 68),
+('koshal_sk@gmail.com', 3, 1, 125),
+('koshal_sk@gmail.com', 4, 1, 19),
+('koshal_sk@gmail.com', 5, 1, 7),
+('koshal_sk@gmail.com', 6, 1, 5),
+('koshal_sk@gmail.com', 7, 1, 3),
+('koshal_sk@gmail.com', 8, 1, 990);
 
 -- --------------------------------------------------------
 
@@ -206,7 +230,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `user_id`, `password`, `name`, `type`, `address`, `contact_no`, `date`) VALUES
 (1, 'koshal_sk@gmail.com', '123456', 'Koshal Garg', 1, 'Rourkela', '8339895678', '2018/04/05'),
-(2, 'dibya_sk@gmail.com', '123456', 'Dibya Ranjan Mishra', 1, 'Rourkela', '9777511898', '2018/04/05');
+(2, 'dibya_sk@gmail.com', '123456', 'Dibya Ranjan Mishra', 1, 'Rourkela', '9777511898', '2018/04/05'),
+(3, 'patient1@gmail.com', '123456', 'Patient One', 2, 'bbsr', '955612100', '2017-12-22'),
+(4, 'patient2@gmail.com', '123456', 'Patient Two', 2, 'bbsr', '8795612100', '2017-08-16'),
+(5, 'doctor1@gmail.com', '123456', 'doctor_one', 3, 'rourkela', '906832521', '2017-10-23'),
+(6, 'doctor2@gmail.com', '123456', 'doctor_two', 3, 'rourkela', '906212521', '2017-12-04');
 
 --
 -- Indexes for dumped tables
@@ -249,6 +277,18 @@ ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`);
 
 --
+-- Indexes for table `prescriptions`
+--
+ALTER TABLE `prescriptions`
+  ADD PRIMARY KEY (`pres_id`);
+
+--
+-- Indexes for table `pres_meds`
+--
+ALTER TABLE `pres_meds`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -262,12 +302,12 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bill`
 --
 ALTER TABLE `bill`
-  MODIFY `bill_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `bill_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `bill_medicine`
 --
 ALTER TABLE `bill_medicine`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `medicine`
 --
@@ -284,10 +324,20 @@ ALTER TABLE `ordered_medicine`
 ALTER TABLE `orders`
   MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `prescriptions`
+--
+ALTER TABLE `prescriptions`
+  MODIFY `pres_id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `pres_meds`
+--
+ALTER TABLE `pres_meds`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
