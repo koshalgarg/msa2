@@ -30,19 +30,18 @@ $email=$_SESSION["email"];
 
 </head>
 <body>
-  
-   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	
+	 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-       <!--  <div class="navbar-header">
+        <div class="navbar-header">
             <a class="navbar-brand" href="shopowner.php">Shop Name</a>
-          </div> -->
+          </div>
             <ul class="navbar-nav mr-auto">
                 <li  class="nav-item"><a class="nav-link"  href="index.php">Home</a></li>
-                <li  class="nav-item active"><a class="nav-link"  href="#">Doctors</a></li>
-                <li class="nav-item"><a class="nav-link"  href="credits.php">Credits</a></li>
+                <li  class="nav-item active"><a class="nav-link"  href="#">Prescriptions</a></li>
             </ul>
 
             <button  type="button" class="btn btn-danger navbar-btn pull-right" data-toggle="modal" data-target="#myModal">Logout</button> 
@@ -72,8 +71,7 @@ $email=$_SESSION["email"];
     </div>
 
   </div>
-</div>    
-
+</div>  	
 
   
 
@@ -82,20 +80,19 @@ $email=$_SESSION["email"];
     <thead>
       <tr>
 
+        <th>SlNO</th>
         <th>Name</th>
         <th>Email</th>
-        <th>Contact No</th>
-        <th>Address</th>
-        <th>Date</th>
-		
-        
+        <th>Shop</th>
+        <th>Date</th>  
         
       </tr>
     </thead>
     <tbody>
 <?php
 
-$qry="SELECT u.name,p.doctor_id,p.prescription_id,u.contact_no,u.address ,p.date from patient p , users u where p.patient_id= '$email' and u.user_id=p.doctor_id";
+$qry="SELECT p.pres_id, u.name as p_name , p.patient_id , v.name as s_name , p.date from Prescriptions p,users u, users v where p.doctor_id='$email' and u.user_id=p.patient_id and v.user_id=p.shop_id ";
+
 
 $r=mysqli_query($conn,$qry);
 
@@ -108,12 +105,12 @@ while($p = mysqli_fetch_assoc($r)) {
     
     ?>
           <tr class="active">
-        <td><?php echo $p['name'] ?></td>    
-        <td><?php echo $p['doctor_id'] ?></td>
-        <td><?php echo $p['contact_no'] ?></td>
-        <td><?php echo $p['address'] ?></td>
-          <td><?php echo $p['date'] ?></td>
-          <td><a href="patientDetails.php?pres_id=<?php echo $p['prescription_id']; ?> "><input type="button" class="btn btn-primary pull-right" value="View" ></a>
+        <td><?php echo $var; ?></td>    
+        <td><?php echo $p['p_name']; ?></td>
+        <td><?php echo $p['patient_id']; ?></td>
+        <td><?php echo $p['s_name']; ?></td>
+          <td><?php echo $p['date']; ?></td>
+          <td><input id="<?php echo $p['pres_id']; ?>" type="button" class="btn btn-primary pull-right" value="View"  onclick="showPresModal(this)">
           </td>
       
 
@@ -136,5 +133,36 @@ while($p = mysqli_fetch_assoc($r)) {
     </tbody>
   </table>
 
+<div id="pres_contain"></div>
+
 
 </body>
+
+<script type="text/javascript">
+  
+
+function showPresModal(obj) {
+
+          var id=obj.id;
+        
+            jQuery.ajax({
+                type: 'POST',
+                url: "ajaxphp/showprescriptionmodal.php",
+                data: {'pres_id':id
+
+                        },
+               
+                success: function(response)
+                {
+                 //alert(response);
+                 document.getElementById("pres_contain").innerHTML=response;
+                 //jQuery('#bill_contain').html(response);
+                 jQuery('#pres_contain > #ab').modal();
+                     
+                }
+            });
+
+
+}
+
+</script>

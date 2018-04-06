@@ -22,7 +22,7 @@
 require('../connect.php');
 session_start();
 if(!isset($_SESSION['email'])){
-header('Location:/msa/index.php');
+header('Location:../index.php');
 }
 
 $email=$_SESSION['email'];
@@ -39,18 +39,22 @@ else{
   $bill_id=$_SESSION['bill_id'];
 }
 
-$qry="select u.user_id,u.name,u.contact_no,b.date as date,u.address  from bill b,users u where b.bill_id='$bill_id' and u.user_id=b.patient_id";
-
-$r=mysqli_query($conn, $qry);
-$user_info=mysqli_fetch_assoc($r);
-
-if($user_info['date']==''){
-  $user_info['date']=date("Y-m-d");
  $user_info['name']="";
- 
  $user_info['user_id']="";
  $user_info['address']="";  
-}
+ $user_info['date']="";  
+ 
+
+$qry="select u.user_id,u.name,u.contact_no,b.date as date,u.address  from bill b,users u where b.bill_id='$bill_id' and u.user_id=b.patient_id";
+$r=mysqli_query($conn, $qry);
+if(mysqli_num_rows($r))
+  $user_info=mysqli_fetch_assoc($r);
+
+$qry="select date from prescriptions p where p.pres_id='$pres_id' " ;
+$r=mysqli_query($conn, $qry);
+if(mysqli_num_rows($r)){
+$user_info['date']=mysqli_fetch_assoc($r)['date']; 
+
 
 ?>
 
@@ -97,7 +101,7 @@ if($user_info['date']==''){
         <p>Are you surely want to logout?.</p>
       </div>
       <div class="modal-footer">
-       <a href="/msa/logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
+       <a href="../logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>
@@ -119,7 +123,7 @@ if($user_info['date']==''){
         <p>Are you surely want to logout?.</p>
       </div>
       <div class="modal-footer">
-       <a href="/msa/logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
+       <a href="../logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>

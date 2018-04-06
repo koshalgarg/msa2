@@ -45,7 +45,7 @@ if(isset($_SESSION['email']))
 					<div class="panel-body">
 						<div class="row">
 							<div class="col-lg-12">
-								<form id="login-form" action="/MSA/login.php" method="post" role="form" style="display: block;" onsubmit="return logincheck()">
+								<form id="login-form" action="login.php" method="post" role="form" style="display: block;" onsubmit="return logincheck()">
 									<div class="form-group">
 										<input type="text" name="email" id="email" tabindex="1" class="form-control" placeholder="Email ID" value="">
 									</div>
@@ -65,7 +65,7 @@ if(isset($_SESSION['email']))
 									</div>
 									
 								</form>
-								<form  id="register-form" action="/MSA/registration.php" method="post" role="form" style="display: none;" onsubmit="return validateForm()">
+								<form  id="register-form" action="registration.php" method="post" role="form" style="display: none;" onsubmit="return validateForm()">
 									<div class="form-group">
 										<input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="Name" value="" required>
 									</div>

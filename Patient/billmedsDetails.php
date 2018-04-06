@@ -1,15 +1,3 @@
-<?php
-
-require('../connect.php');
-session_start();
-if(!isset($_SESSION['email'])){
-header('Location:../index.php');
-
-}
-
-$email=$_SESSION["email"];
-
-?>
 <head>
 <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,9 +17,10 @@ $email=$_SESSION["email"];
 
 
 </head>
+
 <body>
   
-   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -40,8 +29,8 @@ $email=$_SESSION["email"];
             <a class="navbar-brand" href="shopowner.php">Shop Name</a>
           </div> -->
             <ul class="navbar-nav mr-auto">
-                <li  class="nav-item"><a class="nav-link"  href="index.php">Home</a></li>
-                <li  class="nav-item active"><a class="nav-link"  href="#">Doctors</a></li>
+                <li  class="nav-item active"><a class="nav-link"  href="#">Home</a></li>
+                <li  class="nav-item"><a class="nav-link"  href="doctors.php">Doctors</a></li>
                 <li class="nav-item"><a class="nav-link"  href="credits.php">Credits</a></li>
             </ul>
 
@@ -66,75 +55,78 @@ $email=$_SESSION["email"];
         <p>Are you surely want to logout?.</p>
       </div>
       <div class="modal-footer">
-       <a href="../logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
+       <a href="/msa/logout.php"> <button type="button" class="btn btn-default" >Confirm</button></a>
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
     </div>
 
   </div>
-</div>    
+</div>
 
 
-  
+<?php
+require('../connect.php');
+session_start();
+$uid=$_SESSION['email'];
+$req = mysqli_real_escape_string($conn, $_GET["bill_id"]);
 
+$qr1 = "SELECT * FROM bill WHERE bill_id='".$req."' and patient_id='".$uid."'";
+
+$r = mysqli_query($conn, $qr1);
+
+
+
+if(mysqli_num_rows($r) > 0)
+{?>
 
 <table class="table" id="myTable">
     <thead>
       <tr>
 
-        <th>Name</th>
-        <th>Email</th>
-        <th>Contact No</th>
-        <th>Address</th>
-        <th>Date</th>
-		
+        <th>Medicine Name</th>
+        <th>Quantity</th>
+        
         
         
       </tr>
     </thead>
     <tbody>
 <?php
+$qr2 = "SELECT * FROM bill_medicine b,medicine m WHERE bill_id='".$req."' and b.product_id=m.product_id";
+$r2 = mysqli_query($conn, $qr2);
 
-$qry="SELECT u.name,p.doctor_id,p.prescription_id,u.contact_no,u.address ,p.date from patient p , users u where p.patient_id= '$email' and u.user_id=p.doctor_id";
+ $data = array();	
+ while($row = mysqli_fetch_assoc($r2))
+ {?>
+ 	<tr class="active">
+     <td><?php echo $row['name'] ?></td>    
+     <td><?php echo $row['qty'] ?></td>
+   </tr>
+ <?php 
+}
 
-$r=mysqli_query($conn,$qry);
+ echo "</tbody>";
+ echo "</table>";
+ while($rz = mysqli_fetch_assoc($r))
+ {
+ 	$var=$rz['total'];
+ 	$v2=$rz['paid'];
+ }
+ echo "<div class='card mx-auto w-50 text-center'>";
+ echo "<div class='card-body'>";
+ echo "<h4 class='text-primary text-center'>Total Amount = ".$var."</h4>";
+ echo "<h4 class='text-primary text-center'>Amount Paid = ".$v2."</h4>";
+  echo "</div>"; 
+ 
+echo "</div>";
 
 
-if ($r->num_rows > 0) 
+}
+else
 {
-   
-   $var=1;
-while($p = mysqli_fetch_assoc($r)) {
-    
-    ?>
-          <tr class="active">
-        <td><?php echo $p['name'] ?></td>    
-        <td><?php echo $p['doctor_id'] ?></td>
-        <td><?php echo $p['contact_no'] ?></td>
-        <td><?php echo $p['address'] ?></td>
-          <td><?php echo $p['date'] ?></td>
-          <td><a href="patientDetails.php?pres_id=<?php echo $p['prescription_id']; ?> "><input type="button" class="btn btn-primary pull-right" value="View" ></a>
-          </td>
-      
-
-      </tr>
-
-
-
-
-    <?php
-    $var=$var+1;
-  }
-
-} 
-
+	echo "<h1>Wrong Details</h1>";
+}
 
 ?>
-
-
-
-    </tbody>
-  </table>
-
-
+ 
 </body>
